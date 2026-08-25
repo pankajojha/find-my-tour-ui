@@ -9,6 +9,8 @@ import Privacy from "./components/Privacy";
 import Plans from "./components/Plans";
 import FAQ from "./components/FAQ";
 import Closing from "./components/Closing";
+import AuthModal from "./components/AuthModal";
+import { AuthProvider } from "./lib/auth";
 import { usePrefersReducedMotion } from "./lib/motion";
 
 function BackToTop() {
@@ -39,6 +41,14 @@ function BackToTop() {
 
 export default function App() {
   return (
+    <AuthProvider>
+      <Shell />
+    </AuthProvider>
+  );
+}
+
+function Shell() {
+  return (
     <div className="min-h-screen bg-deep text-paper">
       <a
         href="#platform"
@@ -61,6 +71,7 @@ export default function App() {
         <Closing />
       </main>
 
+      <AuthModal />
       <BackToTop />
       <div className="noise-layer" aria-hidden="true" />
     </div>

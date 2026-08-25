@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { Reveal, usePrefersReducedMotion } from "../lib/motion";
+import { useAuth } from "../lib/auth";
 import { BOARD_WORDS, AI_LINES, HERO_STATS, HERO_IMG_OIA, HERO_IMG_FERRY } from "../data";
 import {
   CompassRose,
@@ -77,6 +78,7 @@ const AVATARS = [
 ];
 
 export default function Hero() {
+  const { open, user } = useAuth();
   return (
     <section id="top" className="relative overflow-hidden bg-deep bg-grid-dark">
       {/* ambient layers */}
@@ -153,13 +155,13 @@ export default function Hero() {
 
           <Reveal delay={340}>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a
-                href="#platform"
+              <button
+                onClick={() => open("signup")}
                 className="btn-arrow group inline-flex items-center gap-2.5 rounded-full bg-coral px-7 py-3.5 text-[15px] font-semibold text-deep transition-all duration-300 hover:bg-ember hover:shadow-[0_14px_36px_-10px_rgb(255_92_57/0.65)]"
               >
-                Open the consumer flow
+                Start a trip — it's free
                 <IconArrowRight className="h-4.5 w-4.5" />
-              </a>
+              </button>
               <a
                 href="#platform"
                 className="btn-arrow inline-flex items-center gap-2.5 rounded-full border border-paper/25 px-7 py-3.5 text-[15px] font-semibold text-paper transition-all duration-300 hover:border-teal hover:text-teal"
@@ -169,6 +171,20 @@ export default function Hero() {
               </a>
             </div>
           </Reveal>
+
+          {!user && (
+            <Reveal delay={300}>
+              <p className="mt-5 text-[13px] text-paper/50">
+                Already planning a trip?{" "}
+                <button
+                  onClick={() => open("signin")}
+                  className="link-underline font-semibold text-teal"
+                >
+                  Sign in to your workspace
+                </button>
+              </p>
+            </Reveal>
+          )}
 
           <Reveal delay={420}>
             <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-paper/12 pt-7">

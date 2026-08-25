@@ -1,8 +1,10 @@
 import { Reveal } from "../lib/motion";
+import { useAuth } from "../lib/auth";
 import { PLANS } from "../data";
 import { IconCheck, IconArrowRight } from "./icons";
 
 export default function Plans() {
+  const { open } = useAuth();
   return (
     <section id="plans" className="relative scroll-mt-20 bg-paper bg-grid-light py-24 text-ink lg:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -66,16 +68,25 @@ export default function Plans() {
                   ))}
                 </ul>
 
-                <a
-                  href={p.href}
-                  className={`btn-arrow mt-8 inline-flex w-full items-center justify-center gap-2.5 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-300 ${
-                    p.featured
-                      ? "bg-coral text-deep hover:bg-ember hover:shadow-[0_12px_30px_-10px_rgb(255_92_57/0.65)]"
-                      : "border border-ink/25 text-ink hover:border-coral hover:bg-coral hover:text-deep"
-                  }`}
-                >
-                  {p.cta} <IconArrowRight className="h-4 w-4" />
-                </a>
+                {p.cta === "Talk to us" ? (
+                  <a
+                    href={p.href}
+                    className={`btn-arrow mt-8 inline-flex w-full items-center justify-center gap-2.5 rounded-full border border-ink/25 px-6 py-3.5 text-[14px] font-semibold text-ink transition-all duration-300 hover:border-coral hover:bg-coral hover:text-deep`}
+                  >
+                    {p.cta} <IconArrowRight className="h-4 w-4" />
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => open("signup")}
+                    className={`btn-arrow mt-8 inline-flex w-full items-center justify-center gap-2.5 rounded-full px-6 py-3.5 text-[14px] font-semibold transition-all duration-300 ${
+                      p.featured
+                        ? "bg-coral text-deep hover:bg-ember hover:shadow-[0_12px_30px_-10px_rgb(255_92_57/0.65)]"
+                        : "border border-ink/25 text-ink hover:border-coral hover:bg-coral hover:text-deep"
+                    }`}
+                  >
+                    {p.cta} <IconArrowRight className="h-4 w-4" />
+                  </button>
+                )}
               </article>
             </Reveal>
           ))}
