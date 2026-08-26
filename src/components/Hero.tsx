@@ -123,7 +123,7 @@ export default function Hero() {
           <Reveal>
             <p className="mb-6 flex items-center gap-3 font-mono text-[11.5px] font-medium uppercase tracking-[0.28em] text-teal">
               <span className="animate-pulsedot inline-block h-2 w-2 rounded-full bg-coral" />
-              AI travel planning · consumer + managed
+              AI trip planning · consumer + managed
             </p>
           </Reveal>
 
@@ -137,7 +137,7 @@ export default function Hero() {
 
           <Reveal delay={180}>
             <p className="mt-7 max-w-xl text-[17px] leading-relaxed text-paper/65">
-              Explorer Agents turns messy bookings, forwarded emails and group-chat chaos into a
+              FindMyTour.AI turns messy bookings, forwarded emails and group-chat chaos into a
               clean, shared itinerary — for families and friend groups, and for the coordinators
               and programs that move travelers at scale.
             </p>

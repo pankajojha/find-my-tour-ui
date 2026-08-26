@@ -139,7 +139,7 @@ export const FLOW_STEPS = [
   {
     n: "01",
     title: "Capture anything",
-    body: "Paste free-form plans, forward a confirmation email, or drop in Word and PDF documents. Explorer Agents pulls the trip out of the noise.",
+    body: "Paste free-form plans, forward a confirmation email, or drop in Word and PDF documents. FindMyTour.AI pulls the trip out of the noise.",
     chips: [".pdf", ".docx", ".eml", "free text"],
   },
   {

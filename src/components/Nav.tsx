@@ -64,10 +64,10 @@ export default function Nav() {
       />
 
       <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="group flex items-center gap-3" aria-label="Explorer Agents — home">
+        <a href="#top" className="group flex items-center gap-3" aria-label="FindMyTour.AI — home">
           <CompassMark className="h-9 w-9 transition-transform duration-700 ease-out group-hover:rotate-[135deg]" />
           <span className="font-display text-[1.15rem] font-semibold tracking-tight text-paper">
-            Explorer<span className="text-coral"> Agents</span>
+            FindMyTour<span className="text-coral">.AI</span>
           </span>
         </a>
 

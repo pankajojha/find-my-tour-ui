@@ -285,7 +285,7 @@ export default function AuthModal() {
           <div className="mb-6 flex items-center gap-2.5 md:hidden">
             <CompassMark className="h-7 w-7" />
             <span className="font-mono text-[10.5px] font-semibold uppercase tracking-[0.24em] text-ink/55">
-              Explorer Agents · Crew access
+              FindMyTour.AI · Crew access
             </span>
           </div>
 
