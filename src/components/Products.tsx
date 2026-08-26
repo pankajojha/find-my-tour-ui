@@ -134,7 +134,7 @@ export default function Products() {
           </Reveal>
           <Reveal delay={120} className="lg:col-span-5">
             <p className="max-w-md text-[15.5px] leading-relaxed text-ink/65 lg:ml-auto">
-              Explorer Agents serves two buying motions. Flip between the consumer travel
+              FindMyTour.AI serves two buying motions. Flip between the consumer travel
               experience and the managed-travel platform — without mixing the message.
             </p>
           </Reveal>

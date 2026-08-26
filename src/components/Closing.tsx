@@ -25,7 +25,7 @@ function ClosingBand() {
             <em className="font-light italic text-coral">or go straight to the excursions.</em>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-center text-[15.5px] leading-relaxed text-paper/60">
-            Explorer Agents is strongest when the planning flow and the selling flow work
+            FindMyTour.AI is strongest when the planning flow and the selling flow work
             together. Start wherever your travelers already are.
           </p>
         </Reveal>
@@ -218,7 +218,7 @@ function Footer() {
       <div className="border-t border-paper/8">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8">
           <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-paper/35">
-            © 2026 Explorer Agents · charted with care
+            © 2026 FindMyTour.AI · charted with care
           </p>
           <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-paper/35">
             PII &amp; PCI never touch the AI — <a href="#privacy" className="link-underline text-teal">our guardrails</a>
