@@ -58,8 +58,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(() => {
     setUser(null);
+    // Revoke the Cognito session server-side (best-effort, fire-and-forget).
+    void import("../api/auth").then((m) => m.logoutUser());
     try {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem("findmytour_token");
+      localStorage.removeItem("findmytour_refresh_token");
+      sessionStorage.removeItem("findmytour_token");
+      // Expire every cookie readable on this origin.
+      document.cookie.split(";").forEach((c) => {
+        const name = c.split("=")[0]?.trim();
+        if (name) {
+          document.cookie = `${name}=; Max-Age=0; Path=/`;
+        }
+      });
     } catch {
       /* noop */
     }

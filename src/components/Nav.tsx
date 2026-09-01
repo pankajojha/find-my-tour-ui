@@ -3,12 +3,12 @@ import { CompassMark } from "./icons";
 import { useAuth, firstName, initials } from "../lib/auth";
 
 const LINKS = [
-  { label: "Platform", href: "#platform" },
-  { label: "How it works", href: "#flow" },
-  { label: "Excursions", href: "#excursions" },
-  { label: "Privacy", href: "#privacy" },
-  { label: "Plans", href: "#plans" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Platform", href: "/#platform" },
+  { label: "How it works", href: "/#flow" },
+  { label: "Excursions", href: "/#excursions" },
+  { label: "Privacy", href: "/#privacy" },
+  { label: "Plans", href: "/#plans" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 export default function Nav() {
@@ -64,7 +64,7 @@ export default function Nav() {
       />
 
       <nav className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="group flex items-center gap-3" aria-label="FindMyTour.AI — home">
+        <a href="/" className="group flex items-center gap-3" aria-label="FindMyTour.AI — home">
           <CompassMark className="h-9 w-9 transition-transform duration-700 ease-out group-hover:rotate-[135deg]" />
           <span className="font-display text-[1.15rem] font-semibold tracking-tight text-paper">
             FindMyTour<span className="text-coral">.AI</span>
@@ -121,14 +121,14 @@ export default function Nav() {
                   </div>
                   <div className="p-2">
                     <a
-                      href="#top"
+                      href="/ai"
                       onClick={() => setDropOpen(false)}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium text-paper/75 transition-colors hover:bg-paper/8 hover:text-paper"
                     >
-                      <CompassMark className="h-5 w-5" /> My trips
+                      <CompassMark className="h-5 w-5" /> Plan a trip
                     </a>
                     <a
-                      href="#flow"
+                      href="/bookings"
                       onClick={() => setDropOpen(false)}
                       className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium text-paper/75 transition-colors hover:bg-paper/8 hover:text-paper"
                     >
@@ -136,7 +136,7 @@ export default function Nav() {
                         <rect x="4" y="4" width="16" height="16.5" rx="2" />
                         <path d="M8 9.4l1.6 1.6L13 7.6M8 15.4l1.6 1.6L13 13.6M15.5 10h2.5M15.5 16h2.5" />
                       </svg>
-                      Trip checklists
+                      My bookings
                     </a>
                     <div className="mx-3 my-1.5 h-px bg-paper/10" />
                     <button

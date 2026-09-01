@@ -1,4 +1,10 @@
 import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import ToursPage from "./pages/ToursPage";
+import TourDetailPage from "./pages/TourDetailPage";
+import AIPlannerPage from "./pages/AIPlannerPage";
+import BookingsPage from "./pages/BookingsPage";
+import RequireAuth from "./components/RequireAuth";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Ticker from "./components/Ticker";
@@ -10,7 +16,7 @@ import Plans from "./components/Plans";
 import FAQ from "./components/FAQ";
 import Closing from "./components/Closing";
 import AuthModal from "./components/AuthModal";
-import { AuthProvider } from "./lib/auth";
+import { AuthProvider, useAuth } from "./lib/auth";
 import { usePrefersReducedMotion } from "./lib/motion";
 
 function BackToTop() {
@@ -60,20 +66,70 @@ function Shell() {
       <Nav />
 
       <main>
-        <Hero />
-        <Ticker />
-        <Products />
-        <Flow />
-        <Excursions />
-        <Privacy />
-        <Plans />
-        <FAQ />
-        <Closing />
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route
+            path="/tours"
+            element={
+              <div className="subapp">
+                <ToursPage />
+              </div>
+            }
+          />
+          <Route
+            path="/tours/:id"
+            element={
+              <div className="subapp">
+                <TourDetailPage />
+              </div>
+            }
+          />
+          <Route
+            path="/ai"
+            element={
+              <div className="subapp">
+                <RequireAuth title="Sign in to plan your trip">
+                  <AIPlannerPage />
+                </RequireAuth>
+              </div>
+            }
+          />
+          <Route
+            path="/bookings"
+            element={
+              <div className="subapp">
+                <RequireAuth title="Sign in to see your bookings">
+                  <BookingsPage />
+                </RequireAuth>
+              </div>
+            }
+          />
+          <Route path="*" element={<Landing />} />
+        </Routes>
       </main>
 
       <AuthModal />
       <BackToTop />
       <div className="noise-layer" aria-hidden="true" />
     </div>
+  );
+}
+
+function Landing() {
+  const { user } = useAuth();
+
+  return (
+    <>
+      <Hero />
+      <Ticker />
+      <Products />
+      <Flow />
+      <Excursions />
+      <Privacy />
+      {/* Pricing plans are a sales pitch — hidden once someone is aboard. */}
+      {!user && <Plans />}
+      <FAQ />
+      <Closing />
+    </>
   );
 }

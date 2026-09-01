@@ -86,3 +86,17 @@ export async function getSessionUser() {
     return null;
   }
 }
+
+export async function logoutUser() {
+  try {
+    const token =
+      localStorage.getItem('findmytour_token') || sessionStorage.getItem('findmytour_token');
+    await authClient.post(
+      '/auth/logout',
+      {},
+      token ? { headers: { Authorization: `Bearer ${token}` } } : undefined,
+    );
+  } catch {
+    // Best-effort: local cleanup proceeds even if the server call fails.
+  }
+}
