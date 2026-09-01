@@ -174,14 +174,15 @@ export default function AuthModal() {
     const e: Errors = {};
     if (mode === "signup" && name.trim().length < 2) e.name = "required";
     if (!EMAIL_RE.test(email)) e.email = "valid email needed";
+    const pw = password.trim();
     if (mode === "signup") {
       // Mirror the Cognito password policy so failures surface before submit.
-      if (password.length < 8) e.password = "min 8 characters";
-      else if (!/[a-z]/.test(password)) e.password = "add a lowercase letter";
-      else if (!/[A-Z]/.test(password)) e.password = "add an uppercase letter";
-      else if (!/[0-9]/.test(password)) e.password = "add a number";
-      else if (!/[^A-Za-z0-9]/.test(password)) e.password = "add a symbol (e.g. ! @ #)";
-    } else if (mode !== "forgot" && password.length === 0) {
+      if (pw.length < 8) e.password = "min 8 characters";
+      else if (!/[a-z]/.test(pw)) e.password = "add a lowercase letter";
+      else if (!/[A-Z]/.test(pw)) e.password = "add an uppercase letter";
+      else if (!/[0-9]/.test(pw)) e.password = "add a number";
+      else if (!/[^A-Za-z0-9]/.test(pw)) e.password = "add a symbol (e.g. ! @ #)";
+    } else if (mode !== "forgot" && pw.length === 0) {
       e.password = "required";
     }
     return e;
@@ -219,7 +220,9 @@ export default function AuthModal() {
 
       const payload = {
         email: email.trim(),
-        password,
+        // Cognito rejects passwords with leading/trailing whitespace outright,
+        // so a stray space from typing or pasting can only cause failures.
+        password: password.trim(),
         ...(mode === "signup" ? { name: name.trim() } : {}),
       };
 
