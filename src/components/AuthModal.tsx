@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useAuth, firstName, type User } from "../lib/auth";
 import { usePrefersReducedMotion } from "../lib/motion";
 import { TICKER_PORTS } from "../data";
+import { loginUser, signUpUser, requestPasswordless, verifyPasswordless } from "../api/auth";
+import { exchangeGoogleCode, startGoogleOAuth } from "../lib/oauth";
 import { CompassMark, IconCheck, IconEye, IconArrowRight, IconAnchor } from "./icons";
 
 type Mode = "signin" | "signup" | "forgot";
@@ -125,6 +127,41 @@ export default function AuthModal() {
     };
   }, [view, close]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (!code) return;
+
+    const run = async () => {
+      try {
+        setLoading(true);
+        const result = await exchangeGoogleCode(code);
+        const user = result.user || { name: "Google Traveler", email: "" };
+        const token = result.accessToken || result.idToken;
+        if (token) {
+          localStorage.setItem("findmytour_token", token);
+        }
+        if (result.refreshToken) {
+          localStorage.setItem("findmytour_refresh_token", result.refreshToken);
+        }
+        signIn(user);
+        setFlash(user);
+        setTimeout(() => {
+          setFlash(null);
+          close();
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 1300);
+      } catch (error) {
+        console.error("Google OAuth failed", error);
+        setErrors({ email: "OAuth failed", password: "OAuth failed" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void run();
+  }, [close, signIn, view]);
+
   if (!view) return null;
 
   const switchMode = (m: Mode) => {
@@ -137,7 +174,16 @@ export default function AuthModal() {
     const e: Errors = {};
     if (mode === "signup" && name.trim().length < 2) e.name = "required";
     if (!EMAIL_RE.test(email)) e.email = "valid email needed";
-    if (mode !== "forgot" && password.length < 6) e.password = "min 6 characters";
+    if (mode === "signup") {
+      // Mirror the Cognito password policy so failures surface before submit.
+      if (password.length < 8) e.password = "min 8 characters";
+      else if (!/[a-z]/.test(password)) e.password = "add a lowercase letter";
+      else if (!/[A-Z]/.test(password)) e.password = "add an uppercase letter";
+      else if (!/[0-9]/.test(password)) e.password = "add a number";
+      else if (!/[^A-Za-z0-9]/.test(password)) e.password = "add a symbol (e.g. ! @ #)";
+    } else if (mode !== "forgot" && password.length === 0) {
+      e.password = "required";
+    }
     return e;
   };
 
@@ -151,7 +197,7 @@ export default function AuthModal() {
     }, 1300);
   };
 
-  const onSubmit = (ev: FormEvent) => {
+  const onSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
     if (loading) return;
     const e = validate();
@@ -160,22 +206,51 @@ export default function AuthModal() {
       setShakeKey((k) => k + 1);
       return;
     }
+
     setLoading(true);
-    setTimeout(() => {
+
+    try {
       if (mode === "forgot") {
-        setLoading(false);
+        await requestPasswordless({ email: email.trim() });
         setSent(true);
+        setLoading(false);
         return;
       }
+
+      const payload = {
+        email: email.trim(),
+        password,
+        ...(mode === "signup" ? { name: name.trim() } : {}),
+      };
+
+      const response = mode === "signup" ? await signUpUser(payload) : await loginUser(payload);
+
       const derived =
         mode === "signup"
-          ? name.trim()
-          : email
-              .split("@")[0]
-              .replace(/[._-]+/g, " ")
-              .replace(/\b\w/g, (c) => c.toUpperCase()) || "Traveler";
+          ? (response?.user?.name || name.trim() || "Traveler")
+          : (response?.user?.name || email.split("@")[0].replace(/[._-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Traveler");
+
+      if (response?.token || response?.accessToken || response?.idToken) {
+        const token = response.accessToken || response.idToken || response.token;
+        if (token) {
+          localStorage.setItem("findmytour_token", token);
+        }
+        if (response.refreshToken) {
+          localStorage.setItem("findmytour_refresh_token", response.refreshToken);
+        }
+      }
+
       finish({ name: derived, email: email.trim() });
-    }, 950);
+    } catch (error) {
+      console.error("auth submit failed", error);
+      const data = (error as { response?: { data?: { message?: unknown } } })?.response?.data;
+      const serverMsg = typeof data?.message === "string" ? data.message : "";
+      const msg = serverMsg || "invalid credentials";
+      setErrors(/password/i.test(msg) ? { password: msg } : { email: msg });
+      setShakeKey((k) => k + 1);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isSignin = mode === "signin";
@@ -374,7 +449,7 @@ export default function AuthModal() {
                       type={showPw ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
+                      placeholder={mode === "signup" ? "8+ chars with A-z, 0-9 and a symbol" : "Your password"}
                       autoComplete={mode === "signup" ? "new-password" : "current-password"}
                       className={`${inputCls(errors.password)} pr-12`}
                     />
@@ -448,7 +523,15 @@ export default function AuthModal() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => finish({ name: "Google Traveler", email: "you@gmail.com" })}
+                  type="button"
+                  onClick={() => {
+                    try {
+                      startGoogleOAuth();
+                    } catch (error) {
+                      console.error("Google auth start failed", error);
+                      setErrors({ email: "Google auth is not configured" });
+                    }
+                  }}
                   className="flex items-center justify-center gap-2.5 rounded-full border border-ink/18 bg-white px-4 py-3 text-[13.5px] font-semibold text-ink transition-all duration-300 hover:-translate-y-0.5 hover:border-ink/40 hover:shadow-card"
                 >
                   <GoogleG /> Google
