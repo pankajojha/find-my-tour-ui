@@ -2,6 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+const apiOrigin =
+  process.env.API_ORIGIN ??
+  'https://lyjuidar2e.execute-api.us-east-1.amazonaws.com/production'
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
@@ -10,6 +14,13 @@ export default defineConfig({
     strictPort: true,
     hmr: {
       port: 3000,
+    },
+    proxy: {
+      "/api": {
+        target: apiOrigin,
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
     },
   },
 });

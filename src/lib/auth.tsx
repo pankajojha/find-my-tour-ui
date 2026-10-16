@@ -40,8 +40,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [view, setView] = useState<AuthView>(null);
 
   useEffect(() => {
-    setUser(loadUser());
-    setHydrated(true);
+    let cancelled = false;
+
+    const hydrate = async () => {
+      const savedUser = loadUser();
+      if (savedUser) {
+        if (!cancelled) {
+          setUser(savedUser);
+          setHydrated(true);
+        }
+        return;
+      }
+
+      const token = localStorage.getItem("findmytour_token") || sessionStorage.getItem("findmytour_token");
+      if (!token) {
+        if (!cancelled) {
+          setHydrated(true);
+        }
+        return;
+      }
+
+      try {
+        const { getSessionUser } = await import("../api/auth");
+        const sessionUser = await getSessionUser();
+        if (!cancelled && sessionUser) {
+          const normalized = {
+            name: typeof sessionUser.name === "string" ? sessionUser.name : "Traveler",
+            email: typeof sessionUser.email === "string" ? sessionUser.email : "",
+          };
+          setUser(normalized);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+        }
+      } catch {
+        // Fall back to signed-out UX if the token is expired or invalid.
+      } finally {
+        if (!cancelled) {
+          setHydrated(true);
+        }
+      }
+    };
+
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const open = useCallback((v: "signin" | "signup") => setView(v), []);
